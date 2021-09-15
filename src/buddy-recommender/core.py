@@ -6,13 +6,13 @@
 """
 
 from flask_sqlalchemy import SQLAlchemy
-from flask_security import Security
+from flask_httpauth import HTTPBasicAuth
 
 # Flask-SQLAlchemy extension instance
 db = SQLAlchemy()
 
-# Flask-Security extension instance
-security = Security()
+# Basic auth support
+auth = HTTPBasicAuth()
 
 
 class BuddyError(Exception):
