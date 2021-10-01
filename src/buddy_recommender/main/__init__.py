@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate
 
 from .config import config_by_name
 
 db = SQLAlchemy()
 flask_bcrypt = Bcrypt()
+migrate = Migrate()
 
 
 def create_app(script_info=None):
@@ -15,6 +17,7 @@ def create_app(script_info=None):
     app.config.from_object(script_info)
     db.init_app(app)
     flask_bcrypt.init_app(app)
+    migrate.init_app(app, db)
 
     @app.shell_context_processor
     def shell_context():
