@@ -28,9 +28,9 @@ class ProductionConfig(Config):
 
 
 config_by_name = {
-    'dev': DevelopmentConfig,
+    'development': DevelopmentConfig,
     'test': TestingConfig,
-    'prod': ProductionConfig
+    'production': ProductionConfig
 }
 
 key = Config.SECRET_KEY

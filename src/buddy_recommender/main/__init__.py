@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -9,18 +11,25 @@ db = SQLAlchemy()
 flask_bcrypt = Bcrypt()
 migrate = Migrate()
 
+app = None
+
 
 def create_app(script_info=None):
-    app = Flask(__name__)
-    if script_info is None:
-        script_info = config_by_name['dev']
-    app.config.from_object(script_info)
-    db.init_app(app)
-    flask_bcrypt.init_app(app)
-    migrate.init_app(app, db)
+    new_app = Flask(__name__)
+    config_type = os.getenv('FLASK_ENV') or 'development'
+    config_obj = config_by_name[config_type]
+    new_app.config.from_object(config_obj)
+    db.init_app(new_app)
+    flask_bcrypt.init_app(new_app)
+    migrate.init_app(new_app, db)
 
-    @app.shell_context_processor
+    @new_app.shell_context_processor
     def shell_context():
-        return {'app': app, 'db': db}
+        return {'app': new_app, 'db': db}
 
-    return app
+    return new_app
+
+
+if __name__ == "main":
+    app = create_app()
+
