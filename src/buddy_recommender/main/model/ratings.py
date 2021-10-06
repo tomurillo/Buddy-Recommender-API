@@ -2,10 +2,11 @@ from .. import db
 from sqlalchemy.sql import func
 
 
-class Ratings(db.Model):
+class Rating(db.Model):
     """
     Ratings model for storing main user-item rating matrix
     """
+
     user_id = db.Column(db.Integer, primary_key=True, nullable=False)
     item_id = db.Column(db.Integer, primary_key=True, nullable=False)
     rating = db.Column(db.Integer, nullable=True)
