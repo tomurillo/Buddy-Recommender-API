@@ -11,8 +11,6 @@ db = SQLAlchemy()
 flask_bcrypt = Bcrypt()
 migrate = Migrate()
 
-app = None
-
 
 def create_app(script_info=None):
     new_app = Flask(__name__)
@@ -28,8 +26,3 @@ def create_app(script_info=None):
         return {'app': new_app, 'db': db}
 
     return new_app
-
-
-if __name__ == "main":
-    app = create_app()
-

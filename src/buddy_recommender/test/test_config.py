@@ -4,8 +4,8 @@ import unittest
 from flask import current_app
 from flask_testing import TestCase
 
-from ..manage import app
-from ..main.config import basedir, storedir
+from manage import app
+from buddy_recommender.main.config import basedir, storedir
 
 
 class TestDevelopmentConfig(TestCase):
@@ -14,7 +14,7 @@ class TestDevelopmentConfig(TestCase):
         return app
 
     def test_app_is_development(self):
-        self.assertFalse(app.config['SECRET_KEY'] is 'buddy_secret_key')
+        self.assertTrue(app.config['SECRET_KEY'] is 'buddy_secret_key')
         self.assertTrue(app.config['DEBUG'] is True)
         self.assertFalse(current_app is None)
         self.assertTrue(

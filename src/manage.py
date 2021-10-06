@@ -2,8 +2,9 @@ import unittest
 
 from flask.cli import FlaskGroup
 
-from main import app
+from buddy_recommender.main import create_app
 
+app = create_app()
 cli = FlaskGroup(app)
 
 
