@@ -38,6 +38,31 @@ def get_rating(user_id, item_id):
     return Rating.query.filter_by(user_id=user_id, item_id=item_id).first()
 
 
+def get_user_ratings(user_id):
+    return Rating.query.filter_by(user_id=user_id).all()
+
+
+def get_item_ratings(item_id):
+    return Rating.query.filter_by(item_id=item_id).all()
+
+
+def delete_rating(user_id, item_id):
+    rows = Rating.query.filter_by(user_id=user_id, item_id=item_id).delete()
+    if rows > 0:
+        save_changes()
+        response_object = {
+            'status': 'success',
+            'message': 'Rating deleted.'
+        }
+        return response_object, 200
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Rating does not exist.',
+        }
+        return response_object, 404
+
+
 def get_all_ratings():
     return Rating.query.all()
 
