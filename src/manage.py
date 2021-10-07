@@ -2,9 +2,12 @@ import unittest
 
 from flask.cli import FlaskGroup
 
+from buddy_recommender import blueprint
 from buddy_recommender.main import create_app
 
 app = create_app()
+app.register_blueprint(blueprint)
+
 cli = FlaskGroup(app)
 
 

@@ -4,8 +4,8 @@ from buddy_recommender.main.model.ratings import Rating
 
 def save_rating(data):
     try:
-        row = Rating.query.filter_by(user_id=data['user_id'],
-                                     item_id=data['item_id']).first()
+        row = Rating.query.filter_by(user_id=data['user'],
+                                     item_id=data['item']).first()
         if row:  # Update existing row
             row.rating = data['rating']
             save_changes()
@@ -16,8 +16,8 @@ def save_rating(data):
             return response_object, 200
         else:  # Add new row
             new_row = Rating(
-                user_id=data['user_id'],
-                item_id=data['item_id'],
+                user_id=data['user'],
+                item_id=data['item'],
                 rating=data['rating']
             )
             save_changes(new_row)
