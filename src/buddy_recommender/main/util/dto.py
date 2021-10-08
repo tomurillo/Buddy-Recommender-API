@@ -7,6 +7,6 @@ class RatingDto:
         'user': fields.Integer(required=True, description='id of user rating the item'),
         'item': fields.Integer(required=True, description='id of item being rated by user'),
         'rating': fields.Integer(description='Numeric rating given by user to item'),
-        'updated': fields.DateTime(dt_format='rfc822'),
+        # 'updated': fields.DateTime(dt_format='rfc822'),
     })
 

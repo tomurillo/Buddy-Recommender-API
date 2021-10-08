@@ -17,4 +17,4 @@ class Rating(db.Model):
         return f'<u: {self.user_id}, i: {self.item_id}>: score is {self.rating}'
 
     def __repr__(self):
-        return f'<{self.user_id},{self.item_id}'
+        return f'<{self.user_id},{self.item_id}>'

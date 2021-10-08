@@ -6,12 +6,17 @@ def save_rating(data):
     try:
         row = Rating.query.filter_by(user_id=data['user'],
                                      item_id=data['item']).first()
-        if row:  # Update existing row
-            row.rating = data['rating']
+        if row:
+            if 'rating' in data:  # Update existing row
+                row.rating = data['rating']
+                msg = 'Rating updated.'
+            else:  # Delete existing row
+                db.session.delete(row)
+                msg = 'Rating deleted.'
             save_changes()
             response_object = {
                 'status': 'success',
-                'message': 'Rating updated.'
+                'message': msg
             }
             return response_object, 200
         else:  # Add new row
