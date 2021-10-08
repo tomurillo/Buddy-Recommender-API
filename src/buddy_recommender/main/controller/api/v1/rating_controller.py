@@ -20,6 +20,7 @@ class RatingList(Resource):
 
     @api.expect(_rating, validate=True)
     @api.response(201, 'Rating successfully added')
+    @api.response(400, 'Bad request')
     @api.doc('add a new rating or update an existing rating')
     def post(self):
         """
@@ -54,7 +55,7 @@ class ItemRatingList(Resource):
     @api.marshal_list_with(_rating, envelope='data')
     def get(self, item_id):
         """
-        get all user ratings for an item give its item id
+        get all user ratings for an item given its item id
         """
         ratings = get_item_ratings(item_id)
         if not ratings:
@@ -73,7 +74,7 @@ class UserItemRating(Resource):
     @api.marshal_with(_rating, envelope='data')
     def get(self, user_id, item_id):
         """
-        get all user ratings for an item give its item id
+        get all user ratings for an item given its item id
         """
         rating = get_rating(user_id, item_id)
         if rating:
