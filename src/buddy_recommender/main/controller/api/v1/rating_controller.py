@@ -42,7 +42,7 @@ class UserRatingList(Resource):
         """
         ratings = get_user_ratings(user_id)
         if not ratings:
-            api.abort(404)
+            api.abort(404, status="fail")
         else:
             return ratings
 
@@ -59,7 +59,7 @@ class ItemRatingList(Resource):
         """
         ratings = get_item_ratings(item_id)
         if not ratings:
-            api.abort(404)
+            api.abort(404, status="fail")
         else:
             return ratings
 
@@ -78,6 +78,6 @@ class UserItemRating(Resource):
         """
         rating = get_rating(user_id, item_id)
         if rating:
-            api.abort(404)
-        else:
             return rating
+        else:
+            api.abort(404, status="fail", message=f"No rating for user {user_id} and item {item_id}")
