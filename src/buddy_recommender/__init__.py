@@ -7,7 +7,7 @@ blueprint = Blueprint('api', __name__)
 
 api = Api(
     blueprint,
-    title='BUDDY RECOMEMNDER API',
+    title='BUDDY RECOMMENDER API',
     version='1.0',
     description='a web service for personalized AT recommendations based on collaborative filtering methods',
 )

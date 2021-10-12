@@ -31,6 +31,10 @@ target_metadata = current_app.extensions['migrate'].db.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+from buddy_recommender.main.model.user import Account
+from buddy_recommender.main.model.ratings import Rating
+from buddy_recommender.main.model.blacklisttoken import BlacklistToken
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.

@@ -16,7 +16,7 @@ class BlacklistToken(db.Model):
         self.token = token
 
     def __repr__(self):
-        return '<id: token: {}'.format(self.token)
+        return '<token-id: token: {}>'.format(self.token)
 
     @staticmethod
     def check_blacklist(auth_token: str) -> bool:

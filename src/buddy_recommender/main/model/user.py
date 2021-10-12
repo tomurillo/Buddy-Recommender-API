@@ -4,6 +4,7 @@ import jwt
 from typing import Union
 
 from .. import db, flask_bcrypt
+from buddy_recommender.main.model.blacklisttoken import BlacklistToken
 from ..config import key as app_secret_key
 from sqlalchemy.sql import func
 
@@ -66,7 +67,12 @@ class Account(db.Model):
         :return: integer|string
         """
         try:
-            return jwt.decode(auth_token, app_secret_key)
+            payload = jwt.decode(auth_token, app_secret_key)
+            is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
+            if is_blacklisted_token:
+                return 'Token blacklisted. Please log in again.'
+            else:
+                return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
