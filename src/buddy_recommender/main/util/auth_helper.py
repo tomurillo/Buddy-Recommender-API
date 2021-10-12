@@ -1,4 +1,5 @@
 from buddy_recommender.main.model.user import Account
+from buddy_recommender.main.service.blacklist_service import save_token
 from typing import Dict, Tuple
 
 
@@ -8,22 +9,26 @@ class Auth:
     def login_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         try:
             user = Account.query.filter_by(email=data.get('email')).first()
-            if user and user.check_password(data.get('password')):
+            if not user:
+                msg = 'email does not exist'
+            elif not user.check_password(data.get('password')):
+                msg = 'wrong password'
+            else:
                 auth_token = Account.encode_auth_token(user.id)
                 if auth_token:
                     response_object = {
                         'status': 'success',
                         'message': 'Successfully logged in.',
-                        'Authorization': auth_token.decode()
+                        'Authorization': auth_token
                     }
                     return response_object, 200
-            else:
-                response_object = {
-                    'status': 'fail',
-                    'message': 'email or password does not match.'
-                }
-                return response_object, 401
-
+                else:
+                    msg = 'error encoding auth token'
+            response_object = {
+                'status': 'fail',
+                'message': msg,
+            }
+            return response_object, 401
         except Exception as e:
             print(e)
             response_object = {
@@ -36,14 +41,14 @@ class Auth:
     def logout_user(data: str) -> Tuple[Dict[str, str], int]:
         auth_token = data.split(" ")[1] if data else ''
         if auth_token:
-            resp = Account.decode_auth_token(auth_token)
-            if not isinstance(resp, str):
-                # mark the token as blacklisted
+            response_msg = Account.decode_auth_token(auth_token)
+            if not isinstance(response_msg, str):
+                # mark the token as blacklisted (token can't be used again after logging out)
                 return save_token(token=auth_token)
             else:
                 response_object = {
                     'status': 'fail',
-                    'message': resp
+                    'message': response_msg
                 }
                 return response_object, 401
         else:

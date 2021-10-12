@@ -10,3 +10,19 @@ class RatingDto:
         'created': fields.DateTime(dt_format='rfc822', readonly=True),
         'updated': fields.DateTime(dt_format='rfc822', readonly=True),
     })
+
+
+class AccountDto:
+    api = Namespace('account', description='account related operations')
+    user = api.model('account', {
+        'email': fields.String(required=True, description='account email address'),
+        'password': fields.String(required=True, description='account password'),
+    })
+
+
+class AuthDto:
+    api = Namespace('auth', description='authentication related operations')
+    user_auth = api.model('auth_details', {
+        'email': fields.String(required=True, description='account email address'),
+        'password': fields.String(required=True, description='account password'),
+    })
