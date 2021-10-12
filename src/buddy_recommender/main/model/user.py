@@ -43,7 +43,7 @@ class Account(db.Model):
         return flask_bcrypt.check_password_hash(self.password_hash, password)
 
     @staticmethod
-    def encode_auth_token(account_id: int) -> bytes:
+    def encode_auth_token(account_id: int) -> str:
         """
         Generates the Auth Token
         :return: string
@@ -53,11 +53,7 @@ class Account(db.Model):
             'iat': datetime.datetime.utcnow(),
             'sub': account_id
         }
-        return jwt.encode(
-            payload,
-            app_secret_key,
-            algorithm='HS256'
-        )
+        return jwt.encode(payload, app_secret_key, algorithm='HS256')
 
     @staticmethod
     def decode_auth_token(auth_token: str) -> Union[str, int]:
@@ -67,7 +63,7 @@ class Account(db.Model):
         :return: integer|string
         """
         try:
-            payload = jwt.decode(auth_token, app_secret_key)
+            payload = jwt.decode(auth_token, key=app_secret_key, algorithms=['HS256'])
             is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
             if is_blacklisted_token:
                 return 'Token blacklisted. Please log in again.'
