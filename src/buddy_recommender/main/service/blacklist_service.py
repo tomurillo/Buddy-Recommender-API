@@ -1,14 +1,14 @@
 from buddy_recommender.main import db
 
 from buddy_recommender.main.model.blacklisttoken import BlacklistToken
+from util import save_changes
 from typing import Dict, Tuple
 
 
 def save_token(token: str) -> Tuple[Dict[str, str], int]:
     blacklist_token = BlacklistToken(token=token)
     try:
-        db.session.add(blacklist_token)
-        db.session.commit()
+        save_changes(blacklist_token)
         response_object = {
             'status': 'success',
             'message': 'Successfully logged out.'

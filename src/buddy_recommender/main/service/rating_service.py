@@ -1,4 +1,4 @@
-from buddy_recommender.main import db
+from util import save_changes, delete_row
 from buddy_recommender.main.model.ratings import Rating
 
 
@@ -11,7 +11,7 @@ def save_rating(data):
                 row.rating = data['rating']
                 msg = 'Rating updated.'
             else:  # Delete existing row
-                db.session.delete(row)
+                delete_row(row)
                 msg = 'Rating deleted.'
             save_changes()
             response_object = {
@@ -70,9 +70,3 @@ def delete_rating(user_id, item_id):
 
 def get_all_ratings():
     return Rating.query.all()
-
-
-def save_changes(data=None):
-    if data:
-        db.session.add(data)
-    db.session.commit()

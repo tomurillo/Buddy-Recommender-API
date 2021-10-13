@@ -9,7 +9,7 @@ api = AuthDto.api
 user_auth = AuthDto.user_auth
 
 
-@api.route('/login')
+@api.route('/login')User
 class UserLogin(Resource):
     """
     Account Login Resource
