@@ -1,7 +1,5 @@
-from buddy_recommender.main import db
-
 from buddy_recommender.main.model.blacklisttoken import BlacklistToken
-from util import save_changes
+from .util import save_changes
 from typing import Dict, Tuple
 
 

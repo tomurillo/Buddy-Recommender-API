@@ -11,7 +11,7 @@ _account = AccountDto.user
 
 
 @api.route('/')
-class AccountList('/'):
+class AccountList(Resource):
     @api.doc('List of accounts that have API access')
     @api.marshal_list_with(_account, envelope='data')
     def get(self):

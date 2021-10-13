@@ -1,6 +1,4 @@
-import datetime
-
-from util import save_changes
+from .util import save_changes
 from buddy_recommender.main.model.user import Account
 from typing import Dict, Tuple
 

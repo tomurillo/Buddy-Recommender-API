@@ -1,4 +1,4 @@
-from util import save_changes, delete_row
+from .util import save_changes, delete_row
 from buddy_recommender.main.model.ratings import Rating
 
 
