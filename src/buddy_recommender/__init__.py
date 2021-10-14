@@ -16,4 +16,4 @@ api = Api(
 
 api.add_namespace(rating_v1_ns, path='/api/v1/rating')
 api.add_namespace(account_ns, path='/account')
-api.add_namespace(auth_ns)
+api.add_namespace(auth_ns, path='/auth')

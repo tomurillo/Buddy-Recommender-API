@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 
 class BlacklistToken(db.Model):
     """
-    Token Model for storing JWT tokens
+    Token Model for storing blacklisted JWT tokens
     """
     __tablename__ = 'blacklist_tokens'
 
