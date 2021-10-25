@@ -35,6 +35,21 @@ def logout(self, auth_token):
     return self.client.post('/auth/logout', headers=dict(Authorization=f'Bearer {auth_token}'))
 
 
+def create_account_and_validate(self):
+    """
+    Create a new account for testing protected endpoints
+    :param self: TestCase instance
+    :return: Login response dictionary
+    """
+    create_account(self)
+    response = login(self)
+    self.assertEqual(response.status_code, 200)
+    login_data = json.loads(response.data.decode())
+    auth_token = login_data['Authorization']
+    self.assertTrue(auth_token)
+    return login_data
+
+
 class TestAuthBlueprint(BaseTestCase):
     def test_registration(self):
         """
@@ -121,11 +136,7 @@ class TestAuthBlueprint(BaseTestCase):
         Test for a correct user logout
         """
         with self.client:
-            create_account(self)
-            response = login(self)
-            self.assertEqual(response.status_code, 200)
-            login_data = json.loads(response.data.decode())
-            self.assertTrue(login_data['Authorization'])
+            login_data = create_account_and_validate(self)
             response = logout(self, login_data['Authorization'])
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'success')
@@ -137,12 +148,8 @@ class TestAuthBlueprint(BaseTestCase):
         Test for account logout after being blacklisted
         """
         with self.client:
-            create_account(self)
-            response = login(self)
-            self.assertEqual(response.status_code, 200)
-            login_data = json.loads(response.data.decode())
+            login_data = create_account_and_validate(self)
             auth_token = login_data['Authorization']
-            self.assertTrue(auth_token)
             blacklist_token = BlacklistToken(token=auth_token)
             db.session.add(blacklist_token)
             db.session.commit()
