@@ -8,13 +8,13 @@ API_VERSIONS = ['v1']
 
 def add_rating(self, user_id, item_id, rating, auth_token, api_version):
     headers = dict(Authorization=f'Bearer {auth_token}') if auth_token else None
+    payload = {'user_id': user_id,
+               'item_id': item_id}
+    if rating is not None:
+        payload['rating'] = rating
     return self.client.post(
         f'/api/{api_version}/rating/',
-        data=json.dumps({
-            'user_id': user_id,
-            'item_id': item_id,
-            'rating': rating,
-        }),
+        data=json.dumps(payload),
         headers=headers,
         content_type='application/json'
     )
@@ -109,7 +109,7 @@ class TestRatingBlueprint(BaseTestCase):
             self.assertEqual(len(response_data['data']), 0)
             # Add a few ratings
             add_rating(self, 1, 2, 5, auth_token, API_VERSIONS[0])
-            add_rating(self, 2, 2, 1, auth_token, API_VERSIONS[0])
+            add_rating(self, 1, 3, 1, auth_token, API_VERSIONS[0])
             add_rating(self, 2, 8, 3, auth_token, API_VERSIONS[0])
             # Return all ratings
             response = self.client.get(f'/api/{API_VERSIONS[0]}/rating/',
@@ -117,6 +117,24 @@ class TestRatingBlueprint(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             response_data = json.loads(response.data.decode())
             self.assertEqual(len(response_data['data']), 3)
+            # Update existing rating, number of records must be the same
+            response = add_rating(self, 1, 3, 5, auth_token, API_VERSIONS[0])
+            response_data = json.loads(response.data.decode())
+            self.assertTrue(response_data['status'] == 'success')
+            self.assertTrue(response_data['message'] == 'Rating updated.')
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/rating/',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 200)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(len(response_data['data']), 3)
+            # Remove two ratings
+            add_rating(self, 1, 2, None, auth_token, API_VERSIONS[0])
+            add_rating(self, 1, 3, None, auth_token, API_VERSIONS[0])
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/rating/',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 200)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(len(response_data['data']), 1)
 
     def test_get_admin_service_no_auth(self):
         """
