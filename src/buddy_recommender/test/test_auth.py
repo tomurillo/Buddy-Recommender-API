@@ -3,9 +3,11 @@ import json
 
 from buddy_recommender.main import db
 from buddy_recommender.main.model.blacklisttoken import BlacklistToken
+from buddy_recommender.main.model.user import Account
 from buddy_recommender.test.base import BaseTestCase
 
 ACCOUNT_EMAIL = 'test@example.com'
+ADMIN_EMAIL = 'admin@example.com'
 ACCOUNT_PWD = 'myPassword%*123'
 
 
@@ -35,7 +37,7 @@ def logout(self, auth_token):
     return self.client.post('/auth/logout', headers=dict(Authorization=f'Bearer {auth_token}'))
 
 
-def create_account_and_validate(self):
+def register_and_login(self):
     """
     Create a new account for testing protected endpoints
     :param self: TestCase instance
@@ -43,6 +45,30 @@ def create_account_and_validate(self):
     """
     create_account(self)
     response = login(self)
+    self.assertEqual(response.status_code, 200)
+    login_data = json.loads(response.data.decode())
+    auth_token = login_data['Authorization']
+    self.assertTrue(auth_token)
+    return login_data
+
+
+def create_admin_account():
+    """
+    Create an account with admin permissions on the database
+    :return: None; user is added to DB
+    """
+    admin_account = Account(
+        email=ADMIN_EMAIL,
+        password=ACCOUNT_PWD,
+        admin=True,
+    )
+    db.session.add(admin_account)
+    db.session.commit()
+
+
+def admin_register_and_login(self):
+    create_admin_account()
+    response = login(self, ADMIN_EMAIL)
     self.assertEqual(response.status_code, 200)
     login_data = json.loads(response.data.decode())
     auth_token = login_data['Authorization']
@@ -136,7 +162,7 @@ class TestAuthBlueprint(BaseTestCase):
         Test for a correct user logout
         """
         with self.client:
-            login_data = create_account_and_validate(self)
+            login_data = register_and_login(self)
             response = logout(self, login_data['Authorization'])
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'success')
@@ -148,7 +174,7 @@ class TestAuthBlueprint(BaseTestCase):
         Test for account logout after being blacklisted
         """
         with self.client:
-            login_data = create_account_and_validate(self)
+            login_data = register_and_login(self)
             auth_token = login_data['Authorization']
             blacklist_token = BlacklistToken(token=auth_token)
             db.session.add(blacklist_token)

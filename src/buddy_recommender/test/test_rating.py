@@ -1,7 +1,7 @@
 import json
 
 from buddy_recommender.test.base import BaseTestCase
-from buddy_recommender.test.test_auth import create_account_and_validate
+from buddy_recommender.test.test_auth import register_and_login, admin_register_and_login
 
 API_VERSIONS = ['v1']
 
@@ -26,7 +26,7 @@ class TestRatingBlueprint(BaseTestCase):
         Test for adding a new rating
         """
         with self.client:
-            login_data = create_account_and_validate(self)
+            login_data = register_and_login(self)
             auth_token = login_data['Authorization']
             # Add new rating
             response = add_rating(self, 1, 2, 5, auth_token, API_VERSIONS[0])
@@ -60,7 +60,7 @@ class TestRatingBlueprint(BaseTestCase):
         Test for requesting a non-existing rating
         """
         with self.client:
-            login_data = create_account_and_validate(self)
+            login_data = register_and_login(self)
             auth_token = login_data['Authorization']
             # Add new rating
             response = add_rating(self, 1, 2, 5, auth_token, API_VERSIONS[0])
@@ -79,7 +79,7 @@ class TestRatingBlueprint(BaseTestCase):
         """
         fake_auth_token = 'asdf123'
         with self.client:
-            create_account_and_validate(self)
+            register_and_login(self)
             # No token
             response = add_rating(self, 1, 2, 5, None, API_VERSIONS[0])
             response_data = json.loads(response.data.decode())
@@ -92,3 +92,42 @@ class TestRatingBlueprint(BaseTestCase):
             self.assertEqual(response.status_code, 401)
             self.assertTrue(response_data['status'] == 'fail')
             self.assertTrue(response_data['message'] == 'Invalid token. Please log in again.')
+
+    def test_get_full_matrix(self):
+        """
+        Test for fetching the whole user-item rating matrix (admins only)
+        """
+        with self.client:
+            # Create admin account and login
+            login_data = admin_register_and_login(self)
+            auth_token = login_data['Authorization']
+            # Return all (zero) ratings
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/rating/',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 200)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(len(response_data['data']), 0)
+            # Add a few ratings
+            add_rating(self, 1, 2, 5, auth_token, API_VERSIONS[0])
+            add_rating(self, 2, 2, 1, auth_token, API_VERSIONS[0])
+            add_rating(self, 2, 8, 3, auth_token, API_VERSIONS[0])
+            # Return all ratings
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/rating/',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 200)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(len(response_data['data']), 3)
+
+    def test_get_admin_service_no_auth(self):
+        """
+        Test for unauthorized admin requests
+        """
+        with self.client:
+            login_data = register_and_login(self)  # Normal account
+            auth_token = login_data['Authorization']
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/rating/',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 401)
+            response_data = json.loads(response.data.decode())
+            self.assertTrue(response_data['status'] == 'fail')
+            self.assertTrue(response_data['message'] == 'admin token required')
