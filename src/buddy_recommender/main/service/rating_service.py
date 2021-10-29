@@ -1,4 +1,7 @@
-from .util import save_changes, delete_row
+from typing import Union
+
+from buddy_recommender.main import db
+from buddy_recommender.main.service.util import save_changes, delete_row
 from buddy_recommender.main.model.ratings import Rating
 
 
@@ -39,16 +42,39 @@ def save_rating(data):
         return response_object, 400
 
 
+def fetch_ratings(user_id: Union[int, None], item_id: Union[int, None], columns=None):
+    """
+    Fetch ratings given a user and/or item
+    :param user_id: Unique ID of an existing user; None to fetch all users
+    :param item_id: Unique ID of an existing item; None to fetch all items
+    :param columns: If not None, only the selected model columns will be fetched; otherwise, fetch whole rows
+    :return: An array with rating instances
+    """
+    if user_id is not None and item_id is not None:
+        ratings = get_rating(user_id, item_id)
+    elif item_id is None:
+        ratings = get_user_ratings(user_id, columns)
+    elif user_id is None:
+        ratings = get_item_ratings(item_id, columns)
+    else:
+        raise ValueError('Both user_id and item_id cannot be None!')
+    return ratings
+
+
 def get_rating(user_id, item_id):
     return Rating.query.filter_by(user_id=user_id, item_id=item_id).first()
 
 
-def get_user_ratings(user_id):
-    return Rating.query.filter_by(user_id=user_id).all()
+def get_user_ratings(user_id, columns=None):
+    if columns is None:
+        columns = Rating
+    return db.session.query(columns).filter_by(user_id=user_id).all()
 
 
-def get_item_ratings(item_id):
-    return Rating.query.filter_by(item_id=item_id).all()
+def get_item_ratings(item_id, columns=None):
+    if columns is None:
+        columns = Rating
+    return db.session.query(columns).filter_by(item_id=item_id).all()
 
 
 def delete_rating(user_id, item_id):
