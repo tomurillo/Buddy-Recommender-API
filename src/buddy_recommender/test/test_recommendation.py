@@ -1,9 +1,9 @@
 import json
 
 from buddy_recommender.test.base import BaseTestCase
-from buddy_recommender.test.test_auth import register_and_login, admin_register_and_login
+from buddy_recommender.test.test_auth import admin_register_and_login
 from buddy_recommender.test.test_rating import add_rating
-from buddy_recommender.main.service.recommender.memory_based import user_based_cf_recommend
+from buddy_recommender.main.service.recommender.memory_based import UserBasedCFRecommender
 
 
 class TestRecommendationBlueprint(BaseTestCase):
@@ -24,7 +24,8 @@ class TestRecommendationBlueprint(BaseTestCase):
             add_rating(self, 3, 1, 4, auth_token, 'v1')
             add_rating(self, 3, 3, 1, auth_token, 'v1')
             add_rating(self, 3, 2, 2, auth_token, 'v1')
-            user_based_cf_recommend(1, 2)
+            recommender = UserBasedCFRecommender(top_k=10)
+            recommender.predict_rating(1, 2)
             self.assertTrue(True)
 
 

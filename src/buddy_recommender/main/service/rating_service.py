@@ -1,3 +1,5 @@
+from sqlalchemy import func
+
 from typing import Union
 
 from buddy_recommender.main import db
@@ -71,6 +73,14 @@ def get_user_ratings(user_id, columns=None):
     return db.session.query(columns).filter_by(user_id=user_id).all()
 
 
+def get_user_item_ratings(users=None, columns=None):
+    if users is None:
+        users = []
+    if columns is None:
+        columns = Rating
+    return db.session.query(columns).filter(Rating.user_id.in_(users)).all()
+
+
 def get_item_ratings(item_id, columns=None):
     if columns is None:
         columns = Rating
@@ -92,6 +102,19 @@ def delete_rating(user_id, item_id):
             'message': 'Rating does not exist.',
         }
         return response_object, 404
+
+
+def get_maximum_value(column):
+    max_row = db.session.query(Rating, func.max(column)).first()
+    return max_row[1] if max_row else 0
+
+
+def get_maximum_user_id():
+    return get_maximum_value(Rating.user_id)
+
+
+def get_maximum_item_id():
+    return get_maximum_value(Rating.item_id)
 
 
 def get_all_ratings():

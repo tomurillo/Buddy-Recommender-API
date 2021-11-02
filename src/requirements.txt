@@ -5,4 +5,5 @@ flask-restx==0.5.1
 Flask-SQLAlchemy==2.5.1
 Flask-Testing==0.8.1
 PyJWT==2.2.0
-surprise==0.1
+scikit-learn==0.24.2
+scikit-surprise==1.1.1
