@@ -1,4 +1,5 @@
 from sqlalchemy import func
+import numpy as np
 
 from typing import Union
 
@@ -85,6 +86,21 @@ def get_item_ratings(item_id, columns=None):
     if columns is None:
         columns = Rating
     return db.session.query(columns).filter_by(item_id=item_id).all()
+
+
+def get_item_average_rating(item_id: int) -> float:
+    """
+    Return the average user rating for the given item
+    :param item_id: Numeric ID of the item
+    :return: Average rating of the item taking all users who have rated it into account
+    :param item_id:
+    :return:
+    """
+    avg_rating = 2.5
+    ratings = [r.rating for r in get_item_ratings(item_id, columns=Rating.rating)]
+    if ratings:
+        avg_rating = np.mean(ratings)
+    return avg_rating
 
 
 def delete_rating(user_id, item_id):
