@@ -51,6 +51,6 @@ class UserBasedCFRecommender(BuddyRecommender):
         if n_considered == 0:
             predicted = self.DEFAULT_SCORE
         else:
-            predicted = user_means[user_id-1] + predicted
             predicted /= np.sum(correlations[sort_idx[:n_considered]])  # Score normalization
+            predicted += user_means[user_id-1]
         return self._round_score_prediction(predicted)
