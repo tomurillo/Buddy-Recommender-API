@@ -60,4 +60,4 @@ class BuddyRecommender(object):
 
     @staticmethod
     def _round_score_prediction(score_prediction):
-        return ceil(score_prediction * 2) / 2  # Round up to nearest 0.5
+        return np.clip(ceil(score_prediction * 2) / 2, 1, 5)  # Round up to nearest 0.5
