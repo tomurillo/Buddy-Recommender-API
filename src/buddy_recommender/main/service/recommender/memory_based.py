@@ -44,7 +44,7 @@ class UserBasedCFRecommender(BuddyRecommender):
         item_idx = item_id-1
         n_considered = 0
         for user_idx in sort_idx:
-            if correlations[user_idx] <= 0:
+            if correlations[user_idx] <= 0 or n_considered >= self.top_k:
                 break
             predicted += score_deviations[user_idx, item_idx] * self.user_item_matrix[user_idx, item_idx]
             n_considered += 1
@@ -52,5 +52,5 @@ class UserBasedCFRecommender(BuddyRecommender):
             predicted = self.DEFAULT_SCORE
         else:
             predicted /= np.sum(correlations[sort_idx[:n_considered]])  # Score normalization
-            predicted += user_means[user_id-1]
+            predicted += user_means[user_id-1]  # Add target user average score
         return self._round_score_prediction(predicted)
