@@ -1,9 +1,7 @@
 import json
 
-from buddy_recommender.test.base import BaseTestCase
+from buddy_recommender.test.base import BaseTestCase, API_VERSIONS
 from buddy_recommender.test.test_auth import register_and_login, admin_register_and_login
-
-API_VERSIONS = ['v1']
 
 
 def add_rating(self, user_id, item_id, rating, auth_token, api_version):

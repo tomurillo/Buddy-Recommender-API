@@ -2,6 +2,7 @@ from flask_restx import Api
 from flask import Blueprint
 
 from .main.controller.api.v1.rating_controller import api as rating_v1_ns
+from .main.controller.api.v1.recommendation_controller import api as predict_v1_ns
 from .main.controller.account_controller import api as account_ns
 from .main.controller.auth_controller import api as auth_ns
 
@@ -15,5 +16,6 @@ api = Api(
 )
 
 api.add_namespace(rating_v1_ns, path='/api/v1/rating')
+api.add_namespace(predict_v1_ns, path='/api/v1/prediction')
 api.add_namespace(account_ns, path='/account')
 api.add_namespace(auth_ns, path='/auth')

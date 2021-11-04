@@ -3,6 +3,8 @@ from flask_testing import TestCase
 from buddy_recommender.main import db
 from manage import app
 
+API_VERSIONS = ['v1']
+
 
 class BaseTestCase(TestCase):
     """

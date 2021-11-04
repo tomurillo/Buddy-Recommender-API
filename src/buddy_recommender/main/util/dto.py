@@ -6,7 +6,7 @@ class PredictionDto:
     prediction = api.model('prediction', {
         'user_id': fields.Integer(required=True, description='id of user'),
         'item_id': fields.Integer(required=True, description='id of item'),
-        'predicted_rating': fields.Integer(description='Numeric rating predicted for this item for the user'),
+        'predicted_rating': fields.Float(description='Numeric rating predicted for this item for the user'),
     })
 
 

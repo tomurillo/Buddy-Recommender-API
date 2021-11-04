@@ -8,8 +8,8 @@ api = PredictionDto.api
 _prediction = PredictionDto.prediction
 
 
-@api.route('predict/user/<int:user_id>/item/<int:item_id>')
-@api.route('predict/item/<int:item_id>/user/<int:user_id>')
+@api.route('/user/<int:user_id>/item/<int:item_id>')
+@api.route('/item/<int:item_id>/user/<int:user_id>')
 @api.param('user_id', 'User identifier')
 @api.param('item_id', 'Item (AT entry) identifier')
 class UserItemRatingPrediction(Resource):
@@ -20,8 +20,8 @@ class UserItemRatingPrediction(Resource):
         """
         get all user ratings for an item given its item id
         """
-        rating = rating_prediction(user_id, item_id, method='default')
-        if rating:
-            return rating
+        result = rating_prediction(user_id, item_id, method='default')
+        if type(result) == tuple:
+            api.abort(result[1], status=result[0]['status'], message=result[0]['message'])
         else:
-            api.abort(404, status="fail", message=f"Could not predict rating for user {user_id} and item {item_id}.")
+            return result
