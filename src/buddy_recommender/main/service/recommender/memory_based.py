@@ -17,12 +17,12 @@ class UserBasedCFRecommender(BuddyRecommender):
         """
         super().__init__(top_k)
 
-    def predict_rating(self, user_id, item_id):
+    def _predict_rating(self, user_id: int, item_id: int) -> float:
         """
         Perform a single user-based CF recommendation
-        :param user_id:
-        :param item_id:
-        :return:
+        :param user_id: numeric user ID
+        :param item_id: numeric item ID
+        :return: predicted score given by the user to the item
         """
         predicted = 0.0
         # Fetch users that have rated target item

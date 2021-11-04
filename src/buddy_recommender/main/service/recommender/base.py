@@ -2,6 +2,7 @@ from math import ceil
 from typing import List
 
 from buddy_recommender.main.service.rating_service import *
+from buddy_recommender.main.model.exceptions import ResourceAlreadyExistsException
 
 
 class BuddyRecommender(object):
@@ -22,7 +23,27 @@ class BuddyRecommender(object):
         """
         self.top_k = top_k
 
-    def predict_rating(self, user_id, item_id):
+    def predict_rating(self, user_id: int, item_id: int) -> float:
+        """
+        Perform a single prediction of a rating for a user and an item
+        :param user_id: numeric user ID
+        :param item_id: numeric item ID
+        :return: predicted score given by the user to the item
+        """
+        rating = get_rating(user_id, item_id)
+        if not rating:
+            return self._predict_rating(user_id, item_id)
+        else:
+            raise ResourceAlreadyExistsException(
+                f'User {user_id} already rated item {item_id} with a score of {rating.rating}')
+
+    def _predict_rating(self, user_id: int, item_id: int) -> float:
+        """
+        Subclass-specific method that will perform the prediction
+        :param user_id: numeric user ID
+        :param item_id: numeric item ID
+        :return: predicted score given by the user to the item
+        """
         raise NotImplementedError()
 
     def _create_user_item_matrix(self, users: Union[List, None] = None, force: bool = False):

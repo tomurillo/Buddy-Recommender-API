@@ -1,6 +1,15 @@
 from flask_restx import Namespace, fields
 
 
+class PredictionDto:
+    api = Namespace('prediction', description='User-item rating prediction related operations')
+    prediction = api.model('prediction', {
+        'user_id': fields.Integer(required=True, description='id of user'),
+        'item_id': fields.Integer(required=True, description='id of item'),
+        'predicted_rating': fields.Integer(description='Numeric rating predicted for this item for the user'),
+    })
+
+
 class RatingDto:
     api = Namespace('rating', description='User-item ratings related operations')
     rating = api.model('rating', {

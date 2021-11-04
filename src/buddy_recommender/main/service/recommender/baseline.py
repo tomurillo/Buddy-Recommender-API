@@ -4,7 +4,7 @@ from buddy_recommender.main.service.rating_service import get_item_average_ratin
 
 class BaselineRecommender(BuddyRecommender):
     """
-    Baseline recommender: return global average score
+    Baseline recommender: always returns average item score as rating prediction
     """
 
     def __init__(self, top_k: int):
@@ -14,11 +14,11 @@ class BaselineRecommender(BuddyRecommender):
         """
         super().__init__(top_k)
 
-    def predict_rating(self, user_id, item_id):
+    def _predict_rating(self, user_id, item_id):
         """
-        Perform a single user-based CF recommendation
-        :param user_id:
-        :param item_id:
-        :return: predicted rating
+        Perform a simple user-item recommendation based on the average global rating of the item
+        :param user_id: numeric user ID
+        :param item_id: numeric item ID
+        :return: predicted score for the item
         """
         return get_item_average_rating(item_id)
