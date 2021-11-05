@@ -32,7 +32,8 @@ class UserBasedCFRecommender(BuddyRecommender):
             columns=Rating.user_id)]
         relevant_users.append(user_id)
         # Create user-item matrix for relevant users only
-        self._create_user_item_matrix(users=relevant_users)
+        # self._create_user_item_matrix(users=relevant_users, force=True)
+        self._create_full_user_item_matrix()
         # Subtract user's average score
         user_means = np.true_divide(self.user_item_matrix.sum(1), (self.user_item_matrix > 0.01).sum(1))
         score_deviations = np.subtract(self.user_item_matrix, user_means.reshape(-1, 1),

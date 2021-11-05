@@ -4,6 +4,8 @@ from buddy_recommender.test.base import BaseTestCase, API_VERSIONS
 from buddy_recommender.test.test_auth import register_and_login
 from buddy_recommender.test.test_rating import add_rating
 
+from buddy_recommender.main.service.recommender.memory_based import UserBasedCFRecommender
+
 
 def add_test_ratings(self, auth_token):
     """
@@ -19,6 +21,7 @@ def add_test_ratings(self, auth_token):
     add_rating(self, 3, 1, 4, auth_token, 'v1')
     add_rating(self, 3, 3, 1, auth_token, 'v1')
     add_rating(self, 3, 2, 2, auth_token, 'v1')
+    add_rating(self, 3, 4, 5, auth_token, 'v1')
 
 
 class TestRecommendationBlueprint(BaseTestCase):
@@ -79,3 +82,33 @@ class TestRecommendationBlueprint(BaseTestCase):
             self.assertEqual(response.status_code, 401)
             self.assertTrue(response_data['status'] == 'fail')
             self.assertTrue(response_data['message'] == 'Invalid token. Please log in again.')
+
+    def test_recommendation(self):
+        """
+        Test for item recommendations
+        """
+        with self.client:
+            login_data = register_and_login(self)
+            auth_token = login_data['Authorization']
+            add_test_ratings(self, auth_token)
+            # Get 1 recommendation for user 1
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/top/1/user/1',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 200)
+            payload = json.loads(response.data.decode())['data']
+            self.assertEqual(len(payload), 1)
+            self.assertEqual(payload[0]['user_id'], 1)
+            self.assertTrue(payload[0]['predicted_rating'] >= 1)
+            self.assertTrue(payload[0]['predicted_rating'] <= 5)
+            self.assertTrue(any(payload[0]['item_id'] == i for i in [2, 4]))
+            # Get 2 recommendations for user 1
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/top/2/user/1',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 200)
+            payload = json.loads(response.data.decode())['data']
+            self.assertEqual(len(payload), 2)
+            self.assertTrue(all(d['user_id'] == 1 for d in payload))
+            self.assertTrue(all(d['predicted_rating'] >= 1 for d in payload))
+            self.assertTrue(all(d['predicted_rating'] <= 5 for d in payload))
+            self.assertTrue(all(d['item_id'] in [2, 4] for d in payload))
+            self.assertEqual(len(list({d['item_id']: d for d in payload}.values())), 2)  # No duplicate items

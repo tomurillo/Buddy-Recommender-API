@@ -1,5 +1,7 @@
 from math import ceil
-from typing import List
+from typing import List, Dict
+from operator import itemgetter
+from itertools import islice
 
 from buddy_recommender.main.service.rating_service import *
 from buddy_recommender.main.model.exceptions import ResourceAlreadyExistsException
@@ -22,6 +24,24 @@ class BuddyRecommender(object):
         :return:
         """
         self.top_k = top_k
+
+    def recommend(self, user_id: int, n: int) -> Dict[int, float]:
+        """
+        Given a user, recommend n items (not rated yet)
+        :param user_id: numeric user ID
+        :param n: number of items to recommend
+        :return: dict<item id, predicted rating>, ordered by descending rating prediction
+        """
+        if n <= 0:
+            n = 1
+        user_items = np.array([r.item_id for r in get_user_ratings(user_id)], dtype=int)
+        all_items = np.arange(1, get_maximum_item_id()+1, dtype=int)
+        unrated_items = np.setdiff1d(all_items, user_items)
+        predicted_ratings = {}
+        for i in unrated_items:
+            predicted_ratings[i] = self.predict_rating(user_id, i)
+        sorted_predictions = {k: v for k, v in sorted(predicted_ratings.items(), key=itemgetter(1), reverse=True)}
+        return dict(islice(sorted_predictions.items(), n))
 
     def predict_rating(self, user_id: int, item_id: int) -> float:
         """
@@ -69,7 +89,7 @@ class BuddyRecommender(object):
         :param force: Whether to force re-generation of the user-item matrix if it already exists in this instance
         :return: None, store user-item matrix in user_item_matrix instance attribute
         """
-        if self.user_item_matrix and not force:
+        if not force and self.user_item_matrix is not None and self.user_item_matrix.size > 0:
             return
         ratings = get_all_ratings()
         max_user = get_maximum_user_id()
