@@ -4,8 +4,6 @@ from buddy_recommender.test.base import BaseTestCase, API_VERSIONS
 from buddy_recommender.test.test_auth import register_and_login
 from buddy_recommender.test.test_rating import add_rating
 
-from buddy_recommender.main.service.recommender.memory_based import UserBasedCFRecommender
-
 
 def add_test_ratings(self, auth_token):
     """
