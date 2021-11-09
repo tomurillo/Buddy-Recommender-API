@@ -1,5 +1,5 @@
 from .memory_based import UserBasedCFRecommender
-from buddy_recommender.main.model.exceptions import ResourceAlreadyExistsException
+from buddy_recommender.main.model.exceptions import ResourceAlreadyExistsException, UserDoesNotExistException
 
 
 def recommendation_predictions(user_id: int, n_items: int, method='default'):
@@ -18,7 +18,14 @@ def recommendation_predictions(user_id: int, n_items: int, method='default'):
             'message': f'Recommender method "{method}" does not exist.',
         }
         return response_object, 404
-    recommendations = recommender.recommend(user_id, n_items)
+    try:
+        recommendations = recommender.recommend(user_id, n_items)
+    except UserDoesNotExistException as e:
+        response_object = {
+            'status': 'fail',
+            'message': str(e),
+        }
+        return response_object, 404
     return [
         {
             'user_id': user_id,

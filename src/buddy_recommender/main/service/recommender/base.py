@@ -4,7 +4,7 @@ from operator import itemgetter
 from itertools import islice
 
 from buddy_recommender.main.service.rating_service import *
-from buddy_recommender.main.model.exceptions import ResourceAlreadyExistsException
+from buddy_recommender.main.model.exceptions import *
 
 
 class BuddyRecommender(object):
@@ -50,7 +50,15 @@ class BuddyRecommender(object):
         :param item_id: numeric item ID
         :return: predicted score given by the user to the item
         """
-        rating = get_rating(user_id, item_id)
+        user_max = get_maximum_user_id()
+        item_max = get_maximum_item_id()
+        if 0 <= user_id <= user_max:
+            if 0 <= item_id <= item_max:
+                rating = get_rating(user_id, item_id)
+            else:
+                raise ItemDoesNotExistException(f'Item {item_id} does not exist!')
+        else:
+            raise UserDoesNotExistException(f'User {user_id} does not exist!')
         if not rating:
             return self._predict_rating(user_id, item_id)
         else:

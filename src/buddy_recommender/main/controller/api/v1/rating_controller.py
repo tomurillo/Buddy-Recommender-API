@@ -18,7 +18,7 @@ class RatingList(Resource):
         """
         List all user-item ratings
         """
-        return get_all_ratings()
+        return get_all_ratings(max_ret=100)
 
     @api.expect(_rating, validate=True)
     @api.response(201, 'Rating successfully added')

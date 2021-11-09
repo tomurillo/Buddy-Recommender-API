@@ -133,5 +133,8 @@ def get_maximum_item_id():
     return get_maximum_value(Rating.item_id)
 
 
-def get_all_ratings():
-    return Rating.query.all()
+def get_all_ratings(max_ret=None):
+    if max_ret is None:
+        return Rating.query.all()
+    else:
+        return Rating.query.limit(max_ret).all()

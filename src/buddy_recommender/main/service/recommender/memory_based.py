@@ -3,6 +3,7 @@ import numpy as np
 from .base import BuddyRecommender
 from buddy_recommender.main.service.rating_service import fetch_ratings
 from buddy_recommender.main.model.ratings import Rating
+from buddy_recommender.main.model.exceptions import UserDoesNotExistException
 
 
 class UserBasedCFRecommender(BuddyRecommender):
@@ -30,8 +31,10 @@ class UserBasedCFRecommender(BuddyRecommender):
             item_id=item_id,
             user_id=None,
             columns=Rating.user_id)]
+        if not relevant_users:
+            return self.DEFAULT_SCORE
         relevant_users.append(user_id)
-        # Create user-item matrix for relevant users only
+        # Create user-item matrix for relevant users only (skip for now)
         # self._create_user_item_matrix(users=relevant_users, force=True)
         self._create_full_user_item_matrix()
         # Subtract user's average score

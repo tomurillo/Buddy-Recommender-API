@@ -110,3 +110,25 @@ class TestRecommendationBlueprint(BaseTestCase):
             self.assertTrue(all(d['predicted_rating'] <= 5 for d in payload))
             self.assertTrue(all(d['item_id'] in [2, 4] for d in payload))
             self.assertEqual(len(list({d['item_id']: d for d in payload}.values())), 2)  # No duplicate items
+
+    def test_invalid_recommendations(self):
+        """
+        Test for invalid item recommendations
+        """
+        with self.client:
+            login_data = register_and_login(self)
+            auth_token = login_data['Authorization']
+            add_test_ratings(self, auth_token)
+            # Get recommendation for non-existing user
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/top/1/user/4',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 404)
+            response_data = json.loads(response.data.decode())
+            self.assertTrue(response_data['status'] == 'fail')
+            self.assertTrue(response_data['message'][:22] == 'User 4 does not exist!')
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/top/1/user/-1',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 404)
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/top/-1/user/1',
+                                       headers=dict(Authorization=f'Bearer {auth_token}'))
+            self.assertEqual(response.status_code, 404)

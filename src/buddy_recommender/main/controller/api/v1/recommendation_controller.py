@@ -17,7 +17,7 @@ class RecommendItems(Resource):
     @api.marshal_list_with(_prediction, envelope='data')
     def get(self, k_items, user_id):
         """
-        get item recommendations for the given user
+        recommend items to a user that he/she has not rated yet
         """
         result = recommendation_predictions(user_id, k_items, method='default')
         if type(result) == tuple:
@@ -36,7 +36,7 @@ class UserItemRatingPrediction(Resource):
     @api.marshal_with(_prediction, envelope='data')
     def get(self, user_id, item_id):
         """
-        get all user ratings for an item given its item id
+        perform a default rating score prediction for a user-item pair
         """
         result = rating_prediction(user_id, item_id, method='default')
         if type(result) == tuple:
