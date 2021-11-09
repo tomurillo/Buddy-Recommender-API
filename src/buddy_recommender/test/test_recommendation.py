@@ -60,7 +60,7 @@ class TestRecommendationBlueprint(BaseTestCase):
             self.assertTrue(response_data['status'] == 'fail')
             self.assertTrue(response_data['message'] == 'User 3 already rated item 2.')
 
-    def test_rating_prediction_no_auth(self):
+    def test_recommendation_no_auth(self):
         """
         Test for unauthorized requests
         """
@@ -69,12 +69,25 @@ class TestRecommendationBlueprint(BaseTestCase):
             login_data = register_and_login(self)
             auth_token = login_data['Authorization']
             add_test_ratings(self, auth_token)
+            # Rating prediction
             response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/user/3/item/2')
             response_data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
             self.assertTrue(response_data['status'] == 'fail')
             self.assertTrue(response_data['message'] == 'Provide a valid auth token.')
             response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/user/3/item/2',
+                                       headers=dict(Authorization=f'Bearer {fake_auth_token}'))
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 401)
+            self.assertTrue(response_data['status'] == 'fail')
+            self.assertTrue(response_data['message'] == 'Invalid token. Please log in again.')
+            # Top-k recommendations
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/top/2/user/1')
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 401)
+            self.assertTrue(response_data['status'] == 'fail')
+            self.assertTrue(response_data['message'] == 'Provide a valid auth token.')
+            response = self.client.get(f'/api/{API_VERSIONS[0]}/prediction/top/2/user/1',
                                        headers=dict(Authorization=f'Bearer {fake_auth_token}'))
             response_data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
