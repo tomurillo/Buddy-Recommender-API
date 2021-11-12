@@ -9,4 +9,5 @@ RUN pip install -r requirements.txt
 # Copy and run codebase
 COPY . /app
 EXPOSE 8000
-CMD ["python", "manage.py", "run", "0.0.0.0:8000"]
+
+CMD ["python", "manage.py", "run"]
