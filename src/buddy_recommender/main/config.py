@@ -25,6 +25,9 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, storedir, 'buddy_recommender.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 config_by_name = {

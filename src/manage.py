@@ -11,6 +11,27 @@ app.register_blueprint(blueprint)
 cli = FlaskGroup(app)
 
 
+@app.before_first_request
+def populate_database():
+    """
+    Populate the database with initial data (i.e. admin account).
+    This function runs only once, namely before the first request to this application instance
+    :return:
+    """
+    import os
+    from buddy_recommender.main import db
+    from buddy_recommender.main.model.user import Account
+    admin_email = os.getenv('ADMIN_EMAIL', 'test@example.com')
+    admin_account = Account(
+        email=admin_email,
+        password=os.getenv('ADMIN_PWD', '123456'),
+        admin=True
+    )
+    db.session.add(admin_account)
+    db.session.commit()
+    print(f'Admin account "{admin_email}" added to DB.')
+
+
 @cli.command('test')
 def test():
     """
