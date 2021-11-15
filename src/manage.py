@@ -19,17 +19,24 @@ def populate_database():
     :return:
     """
     import os
-    from buddy_recommender.main import db
+    from flask import abort
+    from buddy_recommender.main.service.util import save_changes
+    from buddy_recommender.main.service.account_service import get_account
     from buddy_recommender.main.model.user import Account
+    import sqlite3
     admin_email = os.getenv('ADMIN_EMAIL', 'test@example.com')
-    admin_account = Account(
-        email=admin_email,
-        password=os.getenv('ADMIN_PWD', '123456'),
-        admin=True
-    )
-    db.session.add(admin_account)
-    db.session.commit()
-    print(f'Admin account "{admin_email}" added to DB.')
+    if not get_account(admin_email):
+        admin_account = Account(
+            email=admin_email,
+            password=os.getenv('ADMIN_PWD', '123456'),
+            admin=True
+        )
+        try:
+            save_changes(admin_account)
+            app.logger.info('Admin account "%s" added to DB.', admin_email)
+        except sqlite3.OperationalError as e:
+            app.logger.error('Database error: %s.', str(e))
+            abort(500)
 
 
 @cli.command('test')
@@ -45,4 +52,4 @@ def test():
 
 
 if __name__ == "__main__":
-    cli()
+    cli(host="localhost", port=5000)
