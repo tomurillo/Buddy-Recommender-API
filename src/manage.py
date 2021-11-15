@@ -10,7 +10,6 @@ app.register_blueprint(blueprint)
 
 cli = FlaskGroup(app)
 
-
 @app.before_first_request
 def populate_database():
     """
@@ -52,4 +51,4 @@ def test():
 
 
 if __name__ == "__main__":
-    cli(host="localhost", port=5000)
+    cli()
