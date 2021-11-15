@@ -6,8 +6,8 @@ from buddy_recommender.main.model.blacklisttoken import BlacklistToken
 from buddy_recommender.main.model.user import Account
 from buddy_recommender.test.base import BaseTestCase
 
-ACCOUNT_EMAIL = 'test@example.com'
-ADMIN_EMAIL = 'admin@example.com'
+ACCOUNT_EMAIL = 'test123@example.com'
+ADMIN_EMAIL = 'admin123@example.com'
 ACCOUNT_PWD = 'myPassword%*123'
 
 
