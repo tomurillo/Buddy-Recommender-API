@@ -10,6 +10,7 @@ app.register_blueprint(blueprint)
 
 cli = FlaskGroup(app)
 
+
 @app.before_first_request
 def populate_database():
     """
