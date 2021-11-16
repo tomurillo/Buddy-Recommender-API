@@ -29,9 +29,10 @@ INFO  [alembic.runtime.migration] Running upgrade 866d7a6604a8 -> ac846ff86f07, 
 - Using the built-in Flask development server:
 
 ```console
+(venv) user@host:~$ export FLASK_ENV=development
 (venv) user@host:~$ python src/manage.py run
  * Serving Flask app 'manage.py' (lazy loading)
- * Environment: production
+ * Environment: development
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
  * Debug mode: off
@@ -41,7 +42,7 @@ INFO  [alembic.runtime.migration] Running upgrade 866d7a6604a8 -> ac846ff86f07, 
 - For production, using `uWSGI` on top of `nginx`:
 
 ```console
-(venv) user@host:~$ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
+(venv) user@host:~$ uwsgi --socket 0.0.0.0:5000 --protocol=http -w src/wsgi:app
 [...]
 WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x5627df2557e0 pid: 30419 (default app)
 [...]
