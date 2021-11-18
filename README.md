@@ -35,14 +35,15 @@ INFO  [alembic.runtime.migration] Running upgrade 866d7a6604a8 -> ac846ff86f07, 
  * Environment: development
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
- * Debug mode: off
+ * Debug mode: on
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
 - For production, using `uWSGI` on top of `nginx`:
 
 ```console
-(venv) user@host:~$ uwsgi --socket 0.0.0.0:5000 --protocol=http -w src/wsgi:app
+(venv) user@host:~$ cd src/
+(venv) user@host:~$ uwsgi wsgi.ini -w wsgi:app
 [...]
 WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x5627df2557e0 pid: 30419 (default app)
 [...]
