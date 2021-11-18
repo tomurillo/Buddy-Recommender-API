@@ -19,24 +19,31 @@ def populate_database():
     :return:
     """
     import os
+    from dotenv import load_dotenv
     from flask import abort
     from buddy_recommender.main.service.util import save_changes
     from buddy_recommender.main.service.account_service import get_account
     from buddy_recommender.main.model.user import Account
     import sqlite3
-    admin_email = os.getenv('ADMIN_EMAIL', 'test@example.com')
-    if not get_account(admin_email):
-        admin_account = Account(
-            email=admin_email,
-            password=os.getenv('ADMIN_PWD', '123456'),
-            admin=True
-        )
-        try:
-            save_changes(admin_account)
-            app.logger.info('Admin account "%s" added to DB.', admin_email)
-        except sqlite3.OperationalError as e:
-            app.logger.error('Database error: %s.', str(e))
-            abort(500)
+    load_dotenv()
+    admin_email = os.getenv('ADMIN_EMAIL')
+    admin_pwd = os.getenv('ADMIN_PWD')
+    if admin_email and admin_pwd:
+        if not get_account(admin_email):
+            admin_account = Account(
+                email=admin_email,
+                password=admin_pwd,
+                admin=True
+            )
+            try:
+                save_changes(admin_account)
+                app.logger.info('Admin account "%s" added to DB.', admin_email)
+            except sqlite3.OperationalError as e:
+                app.logger.error('Database error: %s.', str(e))
+                abort(500)
+    else:
+        app.logger.error('Missing environment variables ADMIN_EMAIL and/or ADMIN_PWD')
+        abort(500)
 
 
 @cli.command('test')
