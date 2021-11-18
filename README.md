@@ -65,8 +65,8 @@ WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x5627df2557e0 pid:
 - In production, with Docker:
 
 ```console
-(venv) user@host:~$ cd src/
-(venv) user@host:~$ docker-compose up -d
+user@host:~$ cd src/
+user@host:~$ docker-compose up -d
 Building web
 [...]
 Creating buddy_api_web_1 ... done
