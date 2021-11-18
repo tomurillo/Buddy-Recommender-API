@@ -14,11 +14,15 @@ RUN pip install -r requirements.txt
 # in development/test environments):
 RUN pip install uwsgi
 
-# Copy and run codebase
+# Copy codebase
 COPY . /app
 EXPOSE 5000
 
+# Run migrations script
+RUN python manage.py db upgrade
+
+# Change user to non-root
 USER app
 
-ENTRYPOINT ["uwsgi"]
-CMD ["wsgi.ini", "-w", "wsgi:app"]
+# Run server
+CMD ["uwsgi", "wsgi.ini", "-w", "wsgi:app"]
