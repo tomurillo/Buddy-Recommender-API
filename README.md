@@ -24,6 +24,19 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 866d7a6604a8, initial migr
 INFO  [alembic.runtime.migration] Running upgrade 866d7a6604a8 -> ac846ff86f07, add auth-related tables
 ```
 
+## Test
+
+To run all unit tests, execute the `test` CLI command:
+
+```console
+(venv) user@host:~$ cd src/
+(venv) user@host:~$ python manage.py test
+[...]
+Ran 23 tests in 11.015s
+
+OK
+```
+
 ## Run
 
 - Using the built-in Flask development server:
