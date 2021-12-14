@@ -73,7 +73,7 @@ def save_ratings(data):
                 'status': 'success',
                 'message': "{} ratings added and {} ratings updated".format(n_added, n_updated)
             }
-            return response_object, 200
+            return response_object, 201
     response_object = {
         'status': 'fail',
         'message': 'Payload must be a list of ratings.',
