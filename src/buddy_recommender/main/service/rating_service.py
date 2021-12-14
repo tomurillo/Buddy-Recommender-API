@@ -45,6 +45,42 @@ def save_rating(data):
         return response_object, 400
 
 
+def save_ratings(data):
+    if isinstance(data, list):
+        n_added = 0
+        n_updated = 0
+        for rating in data:
+            try:
+                num_rating = rating['rating']
+                row = Rating.query.filter_by(user_id=rating['user_id'],
+                                             item_id=rating['item_id']).first()
+                if row:
+                    row.rating = num_rating
+                    n_updated += 1
+                else:
+                    new_row = Rating(
+                        user_id=rating['user_id'],
+                        item_id=rating['item_id'],
+                        rating=num_rating
+                    )
+                    db.session.add(new_row)
+                    n_added += 1
+            except KeyError:
+                continue  # Ignore missing parameters when posting a collection
+        if n_added > 0 or n_updated > 0:
+            save_changes()
+            response_object = {
+                'status': 'success',
+                'message': "{} ratings added and {} ratings updated".format(n_added, n_updated)
+            }
+            return response_object, 200
+    response_object = {
+        'status': 'fail',
+        'message': 'Payload must be a list of ratings.',
+    }
+    return response_object, 400
+
+
 def fetch_ratings(user_id: Union[int, None], item_id: Union[int, None], columns=None):
     """
     Fetch ratings given a user and/or item

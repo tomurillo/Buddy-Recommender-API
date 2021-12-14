@@ -27,10 +27,26 @@ class RatingList(Resource):
     @token_required
     def post(self):
         """
-        Create a new User-Item rating or update an existing one
+        Save a new rating into the DB, or update row if <user, item> pair already exists
         """
         data = request.json
         return save_rating(data=data)
+
+
+@api.route('/collection')
+class RatingCollection(Resource):
+    @api.expect([_rating], validate=True)
+    @api.response(201, 'Rating collection successfully added')
+    @api.response(400, 'Bad request')
+    @api.doc('post a collection of ratings to be added and/or updated')
+    @token_required
+    def post(self):
+        """
+        Save a collection of ratings (a list of <user, item, rating> triples)
+        n.b. not really RESTful, but convenient
+        """
+        data = request.json
+        return save_ratings(data=data)
 
 
 @api.route('/user/<int:user_id>')
