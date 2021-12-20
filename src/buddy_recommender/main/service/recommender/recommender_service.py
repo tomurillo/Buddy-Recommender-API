@@ -30,9 +30,10 @@ def recommendation_predictions(user_id: int, n_items: int, method='default'):
         {
             'user_id': user_id,
             'item_id': i,
-            'predicted_rating': r
+            'predicted_rating': r,
+            'confidence': c
         }
-        for i, r in recommendations.items()]
+        for i, (r, c) in recommendations.items()]
 
 
 def rating_prediction(user_id: int, item_id: int, method='default'):
@@ -52,11 +53,12 @@ def rating_prediction(user_id: int, item_id: int, method='default'):
         }
         return response_object, 404
     try:
-        prediction = recommender.predict_rating(user_id, item_id)
+        prediction, confidence = recommender.predict_rating(user_id, item_id)
         return {
             'user_id': user_id,
             'item_id': item_id,
             'predicted_rating': prediction,
+            'confidence': confidence,
         }
     except ResourceAlreadyExistsException:
         response_object = {

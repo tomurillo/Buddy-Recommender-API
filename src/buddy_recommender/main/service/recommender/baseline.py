@@ -19,6 +19,6 @@ class BaselineRecommender(BuddyRecommender):
         Perform a simple user-item recommendation based on the average global rating of the item
         :param user_id: numeric user ID
         :param item_id: numeric item ID
-        :return: predicted score for the item
+        :return: (float, float) predicted score for the item and confidence (set to zero)
         """
-        return get_item_average_rating(item_id)
+        return get_item_average_rating(item_id), 0.0

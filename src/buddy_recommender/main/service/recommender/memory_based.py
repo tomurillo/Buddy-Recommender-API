@@ -1,9 +1,10 @@
+from typing import Tuple
+
 import numpy as np
 
 from .base import BuddyRecommender
 from buddy_recommender.main.service.rating_service import fetch_ratings
 from buddy_recommender.main.model.ratings import Rating
-from buddy_recommender.main.model.exceptions import UserDoesNotExistException
 
 
 class UserBasedCFRecommender(BuddyRecommender):
@@ -18,23 +19,24 @@ class UserBasedCFRecommender(BuddyRecommender):
         """
         super().__init__(top_k)
 
-    def _predict_rating(self, user_id: int, item_id: int) -> float:
+    def _predict_rating(self, user_id: int, item_id: int) -> Tuple[float, float]:
         """
         Perform a single user-based CF recommendation
         :param user_id: numeric user ID
         :param item_id: numeric item ID
-        :return: predicted score given by the user to the item
+        :return: (float, float): predicted score given by the user to the item, confidence score of prediction
         """
         predicted = 0.0
+        confidence = 0.0
         # Fetch users that have rated target item
         relevant_users = [r.user_id for r in fetch_ratings(
             item_id=item_id,
             user_id=None,
             columns=Rating.user_id)]
         if not relevant_users:
-            return self.DEFAULT_SCORE
-        relevant_users.append(user_id)
+            return self.DEFAULT_SCORE, confidence
         # Create user-item matrix for relevant users only (skip for now)
+        # relevant_users.append(user_id)
         # self._create_user_item_matrix(users=relevant_users, force=True)
         self._create_full_user_item_matrix()
         # Subtract user's average score
@@ -53,8 +55,9 @@ class UserBasedCFRecommender(BuddyRecommender):
             predicted += score_deviations[user_idx, item_idx] * self.user_item_matrix[user_idx, item_idx]
             n_considered += 1
         if n_considered == 0:
-            predicted = self.DEFAULT_SCORE
+            predicted = self.DEFAULT_SCORE, 0.0
         else:
+            confidence = min(n_considered, 100) / 100.0
             predicted /= np.sum(correlations[sort_idx[:n_considered]])  # Score normalization
             predicted += user_means[user_id-1]  # Add target user average score
-        return self._round_score_prediction(predicted)
+        return self._round_score_prediction(predicted), confidence

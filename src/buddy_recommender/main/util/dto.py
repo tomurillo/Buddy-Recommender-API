@@ -7,6 +7,7 @@ class PredictionDto:
         'user_id': fields.Integer(required=True, description='id of user'),
         'item_id': fields.Integer(required=True, description='id of item'),
         'predicted_rating': fields.Float(description='Numeric rating predicted for this item for the user'),
+        'confidence': fields.Float(description='Confidence of the prediction, from 0.0 to 1.0'),
     })
 
 

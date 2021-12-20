@@ -1,5 +1,5 @@
 from math import ceil
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from operator import itemgetter
 from itertools import islice
 
@@ -30,7 +30,7 @@ class BuddyRecommender(object):
         Given a user, recommend n items (not rated yet)
         :param user_id: numeric user ID
         :param n: number of items to recommend
-        :return: dict<item id, predicted rating>, ordered by descending rating prediction
+        :return: dict<item id, (predicted rating, confidence)>, ordered by descending rating prediction
         """
         if n <= 0:
             n = 1
@@ -43,12 +43,12 @@ class BuddyRecommender(object):
         sorted_predictions = {k: v for k, v in sorted(predicted_ratings.items(), key=itemgetter(1), reverse=True)}
         return dict(islice(sorted_predictions.items(), n))
 
-    def predict_rating(self, user_id: int, item_id: int) -> float:
+    def predict_rating(self, user_id: int, item_id: int) -> Tuple[float, float]:
         """
         Perform a single prediction of a rating for a user and an item
         :param user_id: numeric user ID
         :param item_id: numeric item ID
-        :return: predicted score given by the user to the item
+        :return: (float, float): predicted score given by the user to the item and confidence of prediction
         """
         user_max = get_maximum_user_id()
         item_max = get_maximum_item_id()
@@ -65,12 +65,12 @@ class BuddyRecommender(object):
             raise ResourceAlreadyExistsException(
                 f'User {user_id} already rated item {item_id} with a score of {rating.rating}')
 
-    def _predict_rating(self, user_id: int, item_id: int) -> float:
+    def _predict_rating(self, user_id: int, item_id: int) -> Tuple[float, float]:
         """
         Subclass-specific method that will perform the prediction
         :param user_id: numeric user ID
         :param item_id: numeric item ID
-        :return: predicted score given by the user to the item
+        :return: (float, float): predicted score given by the user to the item and confidence of prediction
         """
         raise NotImplementedError()
 
