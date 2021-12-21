@@ -15,7 +15,7 @@ ACCOUNT_PWD = 'myPassword%*123'
 
 
 def create_account(self):
-    # Store new admin account  on DB
+    # Store new admin account on DB
     admin_email = ''.join(random.choices(string.ascii_uppercase, k=6))
     admin_email += '@example.com'
     admin_pwd = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -28,7 +28,7 @@ def create_account(self):
     self.assertEqual(response.status_code, 200)
     login_data = json.loads(response.data.decode())
     auth_token = login_data['Authorization']
-    # Admin creates new account
+    # Admin creates new account on endpoint
     return self.client.post(
         '/account/',
         data=json.dumps({
@@ -107,6 +107,21 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(data['Authorization'])
             self.assertTrue(response.content_type == 'application/json')
             self.assertEqual(response.status_code, 201)
+
+    def test_registration_no_auth(self):
+        with self.client:
+            response = self.client.post(
+                '/account/',
+                data=json.dumps({
+                    'email': ACCOUNT_EMAIL,
+                    'password': ACCOUNT_PWD,
+                }),
+                content_type='application/json',
+            )
+            self.assertEqual(response.status_code, 401)
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'fail')
+            self.assertTrue(data['message'] == 'Provide a valid auth token.')
 
     def test_register_existing(self):
         """
