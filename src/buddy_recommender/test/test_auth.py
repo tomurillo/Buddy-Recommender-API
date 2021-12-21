@@ -1,9 +1,12 @@
 import unittest
 import json
+import random
+import string
 
 from buddy_recommender.main import db
 from buddy_recommender.main.model.blacklisttoken import BlacklistToken
 from buddy_recommender.main.model.user import Account
+from buddy_recommender.main.service.account_service import save_new_account
 from buddy_recommender.test.base import BaseTestCase
 
 ACCOUNT_EMAIL = 'test123@example.com'
@@ -12,13 +15,28 @@ ACCOUNT_PWD = 'myPassword%*123'
 
 
 def create_account(self):
+    # Store new admin account  on DB
+    admin_email = ''.join(random.choices(string.ascii_uppercase, k=6))
+    admin_email += '@example.com'
+    admin_pwd = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    save_new_account({
+        'email': admin_email,
+        'password': admin_pwd,
+    }, admin=True)
+    # Log in with admin
+    response = login(self, admin_email, admin_pwd)
+    self.assertEqual(response.status_code, 200)
+    login_data = json.loads(response.data.decode())
+    auth_token = login_data['Authorization']
+    # Admin creates new account
     return self.client.post(
         '/account/',
         data=json.dumps({
             'email': ACCOUNT_EMAIL,
             'password': ACCOUNT_PWD,
         }),
-        content_type='application/json'
+        content_type='application/json',
+        headers=dict(Authorization=f'Bearer {auth_token}')
     )
 
 

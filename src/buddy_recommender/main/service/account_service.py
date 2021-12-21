@@ -3,12 +3,13 @@ from buddy_recommender.main.model.user import Account
 from typing import Dict, Tuple
 
 
-def save_new_account(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
+def save_new_account(data: Dict[str, str], admin=False) -> Tuple[Dict[str, str], int]:
     user = Account.query.filter_by(email=data['email']).first()
     if not user:
         new_user = Account(
             email=data['email'],
             password=data['password'],
+            admin=admin,
         )
         save_changes(new_user)
         return generate_token(new_user)
