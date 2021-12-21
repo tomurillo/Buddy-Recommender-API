@@ -39,7 +39,7 @@ class BuddyRecommender(object):
         unrated_items = np.setdiff1d(all_items, user_items)
         predicted_ratings = {}
         for i in unrated_items:
-            predicted_ratings[i] = self.predict_rating(user_id, i)
+            predicted_ratings[i] = self.predict_rating(user_id, int(i))
         sorted_predictions = {k: v for k, v in sorted(predicted_ratings.items(), key=itemgetter(1), reverse=True)}
         return dict(islice(sorted_predictions.items(), n))
 
