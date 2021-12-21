@@ -109,6 +109,9 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertEqual(response.status_code, 201)
 
     def test_registration_no_auth(self):
+        """
+        Test for unauthorized account registration
+        """
         with self.client:
             response = self.client.post(
                 '/account/',
