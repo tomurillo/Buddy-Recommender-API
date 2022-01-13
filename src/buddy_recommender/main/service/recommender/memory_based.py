@@ -54,7 +54,7 @@ class UserBasedCFRecommender(BuddyRecommender):
             c = correlations[user_idx]
             if np.isnan(c) or c <= 0:
                 continue
-            predicted += score_deviations[user_idx, item_idx] * self.user_item_matrix[user_idx, item_idx]
+            predicted += score_deviations[user_idx, item_idx] * c
             n_considered += 1
             sum_corr += c
         if n_considered == 0:
