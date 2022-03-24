@@ -66,8 +66,13 @@ WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x5627df2557e0 pid:
 
 ```console
 user@host:~$ cd src/
-user@host:~$ docker-compose up -d
-Building web
+user@host:~$ docker build . -t buddy-api && docker run -p 8081:5000 buddy-api
+Sending build context to Docker daemon  198.1kB
+Step 1/15 : FROM python:3
 [...]
-Creating buddy_api_web_1 ... done
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x55e5d20240b0 pid: 1 (default app)
+[...]
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 1)
+spawned uWSGI worker 5 (pid: 15, cores: 1)
 ```

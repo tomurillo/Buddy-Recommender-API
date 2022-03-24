@@ -15,11 +15,19 @@ RUN pip install -r requirements.txt
 RUN pip install uwsgi
 
 # Copy codebase
-COPY . /app
+COPY . .
 EXPOSE 5000
 
+# Set environment flags
+ENV FLASK_APP=manage.py
+ENV FLASK_ENV=production
+
+# Add DB directory
+RUN mkdir buddy_recommender/main/storage
 # Run migrations script
 RUN python manage.py db upgrade
+# Change owner of DB files to allow writing
+RUN chown -R app:app buddy_recommender/main/storage
 
 # Change user to non-root
 USER app
