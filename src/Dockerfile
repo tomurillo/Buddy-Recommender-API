@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3:9
 
 RUN groupadd --gid 1000 app && \
     useradd --create-home --gid 1000 --uid 1000 app
@@ -23,7 +23,7 @@ ENV FLASK_APP=manage.py
 ENV FLASK_ENV=production
 
 # Add DB directory
-RUN mkdir buddy_recommender/main/storage
+RUN mkdir -p buddy_recommender/main/storage
 # Run migrations script
 RUN python manage.py db upgrade
 # Change owner of DB files to allow writing
