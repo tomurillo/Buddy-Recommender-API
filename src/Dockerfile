@@ -1,4 +1,4 @@
-FROM python:3:9
+FROM python:3.9
 
 RUN groupadd --gid 1000 app && \
     useradd --create-home --gid 1000 --uid 1000 app
@@ -33,4 +33,4 @@ RUN chown -R app:app buddy_recommender/main/storage
 USER app
 
 # Run server
-CMD ["uwsgi", "wsgi.ini", "-w", "wsgi:app"]
+CMD ["uwsgi", "/app/wsgi.ini", "-w", "wsgi:app"]
